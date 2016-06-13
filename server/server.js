@@ -1,11 +1,15 @@
 const express = require('express');
+const http = require('http');
 const path = require('path');
 
-
-//if not using proxy through webpack config
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
 const app = express();
+
+const server = http.createServer(app);
+const socket = require('./helpers/socket');
+const io = require('socket.io').listen(server);
+io.sockets.on('connection', socket);
 
 const isInProduction = process.env.NODE_ENV === 'production';
 const port = isInProduction ? process.env.PORT : 3000;
@@ -20,18 +24,11 @@ if (!isInProduction) {
     });
   });
 }
-// It is important to catch any errors from the proxy or the
-// server will crash. An example of this is connecting to the
-// server when webpack is bundling
-// proxy.on('error', function(event) {
-//   console.log('Could not connect to proxy, please try again...');
-// });
-
 
 app.use(express.static('./'));
 
+server.listen(port, function () {
+  console.log('Listening on port 8080...')
+});
 
-
-app.listen(port, function () {
-  console.log('Listening on port ' + port + '..');
-})
+module.exports = socket;
