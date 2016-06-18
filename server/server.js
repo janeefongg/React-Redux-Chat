@@ -1,6 +1,7 @@
 const express = require('express');
 const http = require('http');
 const path = require('path');
+const db = require('./db/db.js');
 
 const httpProxy = require('http-proxy');
 const proxy = httpProxy.createProxyServer();
